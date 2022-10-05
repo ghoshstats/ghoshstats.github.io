@@ -48,18 +48,18 @@
 									<ul>
 										<!--
 										<li> Population average treatment effect (PATE): \( \tau^{\text{PATE}} = E[Y_i(1)-Y_i(0)] \) </li>
-										<li> Sample average treatment effect (SATE): \( \tau^{\text{SATE}} = \frac{1}{N} \sum_{i=1}^{N} [Y_i(1)-Y_i(0)] \) <\li>
-										<li> Average treatment effect for the treated (ATT): \( \tau^{\text{ATT}} = E[Y_i(1)-Y_i(0)|W_i=1] \) <\li> -->
+										<li> Sample average treatment effect (SATE): \( \tau^{\text{SATE}} = \frac{1}{N} \sum_{i=1}^{N} [Y_i(1)-Y_i(0)] \) </li>
+										<li> Average treatment effect for the treated (ATT): \( \tau^{\text{ATT}} = E[Y_i(1)-Y_i(0)|W_i=1] \) <\/i> -->
 										<li> Conditional average treatment effect (CATE): \(\tau(x)=E[Y_i(1)-Y_i(0)|X_i=x] \) <\li>
 									</ul>
 								    Thus, causal estimands \( \tau=\tau(Y(0),Y(1)) \) can be represented as functions \( \tau= \tau(Y^{\text{obs}},Y^{\text{obs}},W) \). <a href="https://www.jstor.org/stable/pdf/2958688.pdf">Rubin (1978)</a> shows that assuming unit-exchangeability, there exists an unknown parameter vector \( \theta \) with prior distribution \(p(\theta)\) such that $$P(Y(0),Y(1),W,X)=\int \prod_i P(Y_i(0),Y_i(1),W_i,X_i|\theta)p(\theta) d\theta $$. </p>
 								<p> In order to perform Bayesian inference of the estimand \( \tau = \tau(Y^{\text{obs}},Y^{\text{obs}},W) \), we obtain the joint posterior predictive distributions of \(Y^{\text{mis}}, \theta\), and thus \(Y^{\text{mis}}\) and eventually \( \tau \). Then we can factorize the joint distribution into: $$P(Y_i(0),Y_i(1),W_i,X_i|\theta)=P(W_i|Y_i(0),Y_i(1),X_i,\theta_W)P(Y_i(0),Y_i(1)|X_i,\theta_Y)P(X_i|\theta_X) $$. Now let us list the assumptions: <br>
 									<ol>
-										<li> (<b> Positivity </b>): \(0 < P(W_i=1|X_i,Y_i(0),Y_i(1))<1 \) for all \( i \). <\li>
-										<li> (<b> Ignorability </b>): \( P(W_i=1|X_i,Y_i(0),Y_i(1))=P(W_i=1|X_i) \). <\li>
+										<li> (<b> Positivity </b>): \(0 < P(W_i=1|X_i,Y_i(0),Y_i(1))<1 \) for all \( i \). </li>
+										<li> (<b> Ignorability </b>): \( P(W_i=1|X_i,Y_i(0),Y_i(1))=P(W_i=1|X_i) \). </li>
 										<li> <b> SUTVA </b> <\li>
-										<li> A priori distinct and independent parameters for \( \theta_W, \theta_Y \) <\li>
-										<li> (<b> Ignorable assignment <\b>): \(P(W_i|Y_i(0),Y_i(1),X_i)=P(W_i|X_i) \) <\li>
+										<li> A priori distinct and independent parameters for \( \theta_W, \theta_Y \) </li>
+										<li> (<b> Ignorable assignment </b>): \(P(W_i|Y_i(0),Y_i(1),X_i)=P(W_i|X_i) \) </li>
 									</ol>
 								Under the last two assumptions, the joint posterior distribution of \( Y^{\text{mis}}, \theta_Y) \) is $$P(Y^{\text{mis}},\theta_Y | Y^{\text{obs}},W,X) \propto p(\theta_Y)\prod_{i=1}^{N} P(Y_i(0),Y_i(1)|X_i, \theta_Y) $$. The terms \( P(W_i|X_i, \theta_W) \) and \(P(X_i|\theta_X)\) drop out of the likelihood as they are not informative about \( \theta_Y \) or \(Y^{\text{mis}}\). Thus, all we need is to specify the model: \(P(Y_i(0),Y_i(1)|X_i) \). </p>
 											
