@@ -44,6 +44,15 @@
 									Assumptions, Estimands
 								</header>
 								<p> <b>The Setup:</b> We focus on the simple instance where we have a binary treatment that can be easily extended to multiple treatments. Consider a sample of units drawn from a target population, indexed by \( i \in \{1,2,...,N\} \). Let \( W_i \) be the binary variable indicating \( W_i=1 \) for active treatment and \( W_i=0 \) for control. For unit \( i \), a vector of \( p \) pre-treatment covariates \( X_i \) are observed at baseline, and an outcome \( Y_i \) is observed after the treatment. Thus, there are four quantities associated with each sampled unit: \( Y_i(0),Y_i(1),W_i,X_i \), out of which three are observed - \( W_i, Y_i^{\text{obs}}=Y_i (W_i), X_i \) and one is missing - \( Y_i ^{\text{mis}}=Y_i(1-W_i) \). Given \( W_i \), there is a bijection between \( (Y_i ^{\text{obs}}, Y_i ^{\text{mis}}) \) and \( Y_i (0), Y_i (1)) \) as \( Y_i ^{\text{obs}} = Y_i(1)W_i + Y_i(0)(1-W_i) \). </p> 
+								<p> <b>Causal Estimands under consideration:</b> <br>
+									<ol>
+										<li> Population average treatment effect (PATE): \( \tau^{\text{PATE}} = E[Y_i(1)-Y_i(0)] \) </li>
+										<li> Sample average treatment effect (SATE): \( \tau^{\text{SATE}} = \frac{1}{N} \sum_{i=1}^{N} [Y_i(1)-Y_i(0)] \) <\li>
+										<li> Average treatment effect for the treated (ATT): \( \tau^{\text{ATT}} = E[Y_i(1)-Y_i(0)|W_i=1] \) <\li>
+										<li> Conditional average treatment effect (CATE): \(\tau(x)=E[Y_i(1)-Y_i(0)|X_i=x] \) <\li>
+									</ol>
+								    Thus, causal estimands \( \tau=\tau(Y(0),Y(1)) \) can be represented as functions \( \tau= \tau(Y^{\text{obs},Y^{\text{obs}},W) \). <a href="https://www.jstor.org/stable/pdf/2958688.pdf">Rubin (1978)</a> shows that assuming unit-exchangeability, there exists an unknown parameter vector \( \theta \) with prior distribution \(p(\theta)\) such that $$P(Y(0),Y(1),W,X)=\int \prod_i P(Y_i(0),Y_i(1),W_i,X_i|\theta)p(\theta) d\theta $$. </p>
+
 							</section>
 
 					</div>
