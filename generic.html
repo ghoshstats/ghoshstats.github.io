@@ -22,11 +22,13 @@
 		
 		<!-- Wrapper -->
 			<div id="wrapper">
+				<!-- 
 					<nav id="nav">
 						<ul class="links">
 							<li><a href="index.html">About Me</a></li>
+							<li><a href="elements.html">BART</a></li>
 						</ul>
-					</nav>
+					</nav> -->
 
 				<!-- Main -->
 					<div id="main">
@@ -36,12 +38,12 @@
 								<header class="header-dark">
 									Introducing Bayesian Causal Inference
 								</header>
-								<p>In this project, I plan to provide a brief overview of the Bayesian perspective of causal inference based on the potential outcomes framework. The first part of the project deals with reviewing causal estimands, assumptions and the general structure of Bayesian inference of causal effects. The second part deals with Bayesian Non-parametric Modeling for Causal Inference using Bayesian Additive Regression Trees (BARTs) which are claimed to handle a large number of predictors and heterogeneous treatment effects.</p>
-								<p> The "Fundamental Problem of Causal Inference" inherently potrays causal inference as a missing data problem. The Bayesian paradigm is well equipped to handle the structurally missing potential outcomes as it considers the unobserved potential outcomes as unobserved random variables (viewed as unknown parameters). The entire methodology revolves around specifying a model on all random variables, including the potential outcomes, treatment and covariates. From the posterior predictive distributions of the parameters and the unobserved potential outcomes, it is possible to draw inference on the causal estimands which are functions of model parameters, covariates and potential outcomes. The main reason for switching to Bayesian is that the Bayesian approach offers several advantages for Causal Inference. First of all, it is a rigorous inferential framework with automatic uncertainty quantification without relying on large sample approximations. Thus, it makes studying problems with small sample size or having individual treatment effects, hierarchical or network data simpler. Secondly, it naturally incorporates prior knowledge into causal analysis problems encountered frequently in evaluating spatially correlated exposures. Finally, high-dimensional Bayesian methods, like Bayesian non-paramteric models (to be studied later in this project) provide new tools for analyzing complex data. Inspite of these clear advantages, Causal Inference is dominated still by the frequentist mindset with tools like randomization tests, propensity scores etc. The paucity of thorough appraisal of the current Bayesian Causal Inference literature involving opportunities unique to the Bayesian paradigm motivates me to reflect upon this topic.</p>
+								<p>In this project, we provide a brief overview of the Bayesian perspective of causal inference based on the potential outcomes framework. The first part of the project deals with reviewing causal estimands, assumptions and the general structure of Bayesian inference of causal effects. The second part deals with Bayesian Non-parametric Modeling for Causal Inference using Bayesian Additive Regression Trees (BARTs) which are claimed to handle a large number of predictors and heterogeneous treatment effects.</p>
+								<p> The "Fundamental Problem of Causal Inference" inherently potrays causal inference as a missing data problem. The Bayesian paradigm is well equipped to handle the structurally missing potential outcomes as it considers the unobserved potential outcomes as unobserved random variables (viewed as unknown parameters). The entire methodology revolves around specifying a model on all random variables, including the potential outcomes, treatment and covariates. From the posterior predictive distributions of the parameters and the unobserved potential outcomes, we can draw inference on the causal estimands which are functions of model parameters, covariates and potential outcomes. The main reason for switching to Bayesian is that the Bayesian approach offers several advantages for Causal Inference. First of all, it is a rigorous inferential framework with automatic uncertainty quantification without relying on large sample approximations. Thus, it makes studying problems with small sample size or having individual treatment effects, hierarchical or network data simpler. Secondly, it naturally incorporates prior knowledge into causal analysis problems encountered frequently in evaluating spatially correlated exposures. Finally, high-dimensional Bayesian methods, like Bayesian non-paramteric models (to be studied later in this project) provide new tools for analyzing complex data. Inspite of these clear advantages, Causal Inference is dominated still by the frequentist mindset with tools like randomization tests, propensity scores etc. The paucity of thorough appraisal of the current Bayesian Causal Inference literature involving opportunities unique to the Bayesian paradigm motivates me to reflect upon this topic.</p>
 								<header class="header-dark">
 									Assumptions, Estimands and Setup
 								</header>
-								<p> <b>The Setup:</b> Focussing on the simple instance where we have a binary treatment that can be easily extended to multiple treatments. Consider a sample of units drawn from a target population, indexed by \( i \in \{1,2,...,N\} \). Let \( W_i \) be the binary variable indicating \( W_i=1 \) for active treatment and \( W_i=0 \) for control. For unit \( i \), a vector of \( p \) pre-treatment covariates \( X_i \) are observed at baseline, and an outcome \( Y_i \) is observed after the treatment. Thus, there are four quantities associated with each sampled unit: \( Y_i(0),Y_i(1),W_i,X_i \), out of which three are observed - \( W_i, Y_i^{\text{obs}}=Y_i (W_i), X_i \) and one is missing - \( Y_i ^{\text{mis}}=Y_i(1-W_i) \). Given \( W_i \), there is a bijection between \( (Y_i ^{\text{obs}}, Y_i ^{\text{mis}}) \) and \( Y_i (0), Y_i (1)) \) as \( Y_i ^{\text{obs}} = Y_i(1)W_i + Y_i(0)(1-W_i) \). </p> 
+								<p> <b>The Setup:</b> We focus on the simple instance where we have a binary treatment that can be easily extended to multiple treatments. Consider a sample of units drawn from a target population, indexed by \( i \in \{1,2,...,N\} \). Let \( W_i \) be the binary variable indicating \( W_i=1 \) for active treatment and \( W_i=0 \) for control. For unit \( i \), a vector of \( p \) pre-treatment covariates \( X_i \) are observed at baseline, and an outcome \( Y_i \) is observed after the treatment. Thus, there are four quantities associated with each sampled unit: \( Y_i(0),Y_i(1),W_i,X_i \), out of which three are observed - \( W_i, Y_i^{\text{obs}}=Y_i (W_i), X_i \) and one is missing - \( Y_i ^{\text{mis}}=Y_i(1-W_i) \). Given \( W_i \), there is a bijection between \( (Y_i ^{\text{obs}}, Y_i ^{\text{mis}}) \) and \( Y_i (0), Y_i (1)) \) as \( Y_i ^{\text{obs}} = Y_i(1)W_i + Y_i(0)(1-W_i) \). </p> 
 								<p> <b>Causal Estimand under consideration:</b> <br>
 									<ul>
 										<!--
@@ -51,7 +53,7 @@
 										<li> Conditional average treatment effect (CATE): \(\tau(x)=E[Y_i(1)-Y_i(0)|X_i=x] \) </li>
 									</ul>
 								    Thus, causal estimands \( \tau=\tau(Y(0),Y(1)) \) can be represented as functions \( \tau= \tau(Y^{\text{obs}},Y^{\text{obs}},W) \). <a href="https://www.jstor.org/stable/pdf/2958688.pdf">Rubin (1978)</a> shows that assuming unit-exchangeability, there exists an unknown parameter vector \( \theta \) with prior distribution \(p(\theta)\) such that $$P(Y(0),Y(1),W,X)=\int \prod_i P(Y_i(0),Y_i(1),W_i,X_i|\theta)p(\theta) d\theta $$. </p>
-								<p> In order to perform Bayesian inference of the estimand \( \tau = \tau(Y^{\text{obs}},Y^{\text{obs}},W) \), we obtain the joint posterior predictive distributions of \(Y^{\text{mis}}, \theta\), and thus \(Y^{\text{mis}}\) and eventually \( \tau \). Then the joint distribution can be factorized into: $$P(Y_i(0),Y_i(1),W_i,X_i|\theta)=P(W_i|Y_i(0),Y_i(1),X_i,\theta_W)P(Y_i(0),Y_i(1)|X_i,\theta_Y)P(X_i|\theta_X) $$. Now let us list the assumptions: <br>
+								<p> In order to perform Bayesian inference of the estimand \( \tau = \tau(Y^{\text{obs}},Y^{\text{obs}},W) \), we obtain the joint posterior predictive distributions of \(Y^{\text{mis}}, \theta\), and thus \(Y^{\text{mis}}\) and eventually \( \tau \). Then we can factorize the joint distribution into: $$P(Y_i(0),Y_i(1),W_i,X_i|\theta)=P(W_i|Y_i(0),Y_i(1),X_i,\theta_W)P(Y_i(0),Y_i(1)|X_i,\theta_Y)P(X_i|\theta_X) $$. Now let us list the assumptions: <br>
 									<ol>
 										<li> (<b> Positivity </b>): \(0 < P(W_i=1|X_i,Y_i(0),Y_i(1))<1 \) for all \( i \). </li>
 										<li> (<b> Ignorability </b>): \( P(W_i=1|X_i,Y_i(0),Y_i(1))=P(W_i=1|X_i) \). </li>
@@ -59,7 +61,7 @@
 										<li> A priori distinct and independent parameters for \( \theta_W, \theta_Y \) </li>
 										<li> (<b> Ignorable assignment </b>): \(P(W_i|Y_i(0),Y_i(1),X_i)=P(W_i|X_i) \) </li>
 									</ol>
-								Under the last two assumptions, the joint posterior distribution of \( (Y^{\text{mis}}, \theta_Y) \) is $$P(Y^{\text{mis}},\theta_Y | Y^{\text{obs}},W,X) \propto p(\theta_Y)\prod_{i=1}^{N} P(Y_i(0),Y_i(1)|X_i, \theta_Y) $$ The terms \( P(W_i|X_i, \theta_W) \) and \(P(X_i|\theta_X)\) drop out of the likelihood as they are not informative about \( \theta_Y \) or \(Y^{\text{mis}}\). Thus, all that is needed is to specify the model: \(P(Y_i(0),Y_i(1)|X_i) \). </p>
+								Under the last two assumptions, the joint posterior distribution of \( (Y^{\text{mis}}, \theta_Y) \) is $$P(Y^{\text{mis}},\theta_Y | Y^{\text{obs}},W,X) \propto p(\theta_Y)\prod_{i=1}^{N} P(Y_i(0),Y_i(1)|X_i, \theta_Y) $$ The terms \( P(W_i|X_i, \theta_W) \) and \(P(X_i|\theta_X)\) drop out of the likelihood as they are not informative about \( \theta_Y \) or \(Y^{\text{mis}}\). Thus, all we need is to specify the model: \(P(Y_i(0),Y_i(1)|X_i) \). </p>
 								<header class="header-dark">
 									Strategies to simulate \( Y^{\text{mis}} \)
 								</header>
@@ -72,10 +74,82 @@
 									</ol>
 								This sampling strategy is not leakproof and requires modification. There is another sampling scheme called <b> Transparent Parametrization </b> which solves the problem of having no clear separation of identified and non-identified parameters in case of Gibbs sampling. After obtaining the posterior draws of \( (Y^{\text{mis}},\theta_Y) \), the next step is to calculate the posterior distribution of the causal estimand which we will discuss in detail later! </p>
 								<header class="header-dark">
+									Identification for Bayesian Causal Inference
+								</header>
+								<p> In general, when we are provided a causal graph, the do-calculus is generally dependable and fluid for non-parametric identification. However, many practical assumptions cannot be expressed solely in terms of the graph structure (e.g. Instrumental variable designs require monotonicity or linearity). The do-calculus ignores the necessary restrictions on structural functions for these designs and hence are inconclusive! Thus, we feel the need of an alternative strategy- a Bayesian one. We can express causal assumptions as  priors over SCMs, which induces a joint distribution over observed and counterfactual random variables. In this project I will discuss a <b>Simulation-Based Identifiability (SBI)</b> based on (<a href="https://www.researchgate.net/publication/349547189_A_Simulation-Based_Test_of_Identifiability_for_Bayesian_Causal_Inference">Witty et.al (2021))</a>). It is an automated identification technique compatible with any prior over SCMs that basically translates the problem of causal identification to an optimization procedure which aims at maximizing the data likelihood of two candidate SCMs while maximizing the distance between their causal effect estimates. When causal effects are identifiable, the two models converge to the same causal effect and if they are not identifiable, then SBI discovers Maximum Likelihood models that estimate different causal effects.
+								</p>
+								<p> <b>Notation:</b> The notation \( V_{V'=v'}\) refers to the set of random variables \( V \) induced by an intervention \(do(V'=v')\). \( U \) represents latent confounders and \( \epsilon \) exogenous noise. We assume that \(V\) and \(U\) are composed of \(n\) i.i.d. random variables \(V_i, U_i \) respectively. We may consider paramteric priors \(P(f)\) over each \(f \in F\) where \(F\) is a fixed set of deterministic causal functions. The other choice of priors can be semi-parametric i.e. priors which can only be marginalized over to induce a joint distribution over observable and counterfactual random variables (Bayesian non-parametric priors).
+								</p>
+								<p> Now we define <b>identifiability</b> in Bayesian Causal Inference. <br>
+								Given a prior over functions, latent confounders and noise in a SCM \(P(F,U,\epsilon)\), we are interested in the posterior distribution of causal effects, \(P(Q(V_{V'=v'},V_{V'=v''})|V)\). Here \(Q\) is the causal estimand of concern which, in our case is \( \tau \).<br>
+								Let \( F^{*},U^{*},\epsilon^{*} \sim P(F,U,\epsilon) \) be a sample from the prior, and \(V^{*},V^{*}_{V'=v'},V^{*}_{V'=v''}\) be the set of observed and counterfactual random variables generated by applying \( F^{*} \) to \( U^{*} \) and \( \epsilon^{*} \). <br>
+								<b>Definition 1.</b> The causal estimand \(Q\) is identifiable given a sample \( F^{*},U^{*},\epsilon^{*} \sim P(F,U,\epsilon) \) if the posterior \(Q(V_{V'=v'},V_{V'=v''})|V^{*}\) converges to \(Q(V^{*}_{V'=v'},V^{*}_{V'=v''})\) as \( n \rightarrow \infty \). <br>
+								</p>
+								<header class="header-dark">
+									Methodology for Simulation-Based Identifiability
+								</header>
+								<p>The foundation of the SBI procedure is relating identifiability to the question: "Do multiple Maximum Likelihood SCMs produce distinct causal effects?" So, let us dig into the math! <br>
+									We encounter the following objective function:$$L(F^{1},U^{1},F^{2},U^{2},V^{*}) = \log P(V^{*}|F^{1},U^{1}) + \log P(V^{*}|F^{2},U^{2}) + \lambda \Delta Q $$
+									here \( \Delta Q = |Q^{1}-Q^{2}| \), where \(Q^{1}, Q^{2} \) are the causal estimates resulting from each of the two SCMs: \( (F^{1},U^{1},\epsilon^{*}) \) and \( (F^{2},U^{2},\epsilon^{*}) \) respectively, \( \lambda \) is a real hyperparameter. Now, let \( \hat{F}^{1},\hat{U}^{1},\hat{F}^{2},\hat{U}^{2}) \) denote a solution that maximizes \(L\) and let \( \Delta \hat{Q} \) be the corresponding \( \Delta Q \), then we claim the following: <br>
+									<b> Theorem 1.</b> For any \( V^{*} \sim P(V|F^{*},U^{*}) \), then \( P(V^{*}|\hat{F}^{1},\hat{U}^{1}) \) and \(P(V^{*}|\hat{F}^{2},\hat{U}^{2}) \) converge to \(P(V^{*}|F^{*},U^{*}) \) as \( n \rightarrow \infty \).<br>
+
+									<b>Proof:</b> We prove this by contradiction. WLOG, assume that \(P(V^{*}|\hat{F}^{1},\hat{U}^{1})\) does not converge to \(P(V^{*}|F^{*},U^{*})\) as \(n \rightarrow \infty \). Therefore, we must have \( \frac{P(V^{*}|\hat{F}^{1},\hat{U}^{1})}{P(V^{*}|F^{*},U^{*})} \rightarrow 0 \) as \( n \rightarrow \infty \) (since, for i.i.d. data E \( \left[\frac{P(V^{*}|\hat{F}^{1},\hat{U}^{1})}{P(V^{*}|F^{*},U^{*})} \right]=p^n \) where \(p \in (0,1) \)). $$L(\hat{F}^{1},\hat{U}^{1},\hat{F}^{2},\hat{U}^{2},V^{*}) \ge L(\hat{F}^{*},\hat{U}^{*},\hat{F}^{*},\hat{U}^{*},V^{*})$$ 
+									which implies $$\log P(V^{*}|\hat{F}^{1},\hat{U}^{1}) + \log P(V^{*}|\hat{F}^{2},\hat{U}^{2}) + \lambda|\hat{Q}^{1}-\hat{Q}^{2}| \ge 2\log P(V^{*}|\hat{F}^{*},\hat{U}^{*}) $$
+									Reframing this inequality we get $$ 0 \le \log \frac{P(V^{*}|\hat{F}^{1},\hat{U}^{1})}{P(V^{*}|F^{*},U^{*})} + \log \frac{P(V^{*}|\hat{F}^{2},\hat{U}^{2})}{P(V^{*}|F^{*},U^{*})} + \lambda | \hat{Q}^{1}-\hat{Q}^{2}| \rightarrow \log(0)+\frac{P(V^{*}|\hat{F}^{2},\hat{U}^{2})}{P(V^{*}|F^{*},U^{*})}+\lambda | \hat{Q}^{1}-\hat{Q}^{2}| \rightarrow -\infty$$ as \( n\rightarrow \infty\), which is a contradiction! <br>
+									Moving on to our next claim, we can show that as \( n \rightarrow \infty \), the difference between Maximum Likelihood causal estimates is maximized by \( \Delta \hat{Q} \). We define \( \mathbb{L} \) to be the set of maximum likelihood functions and latent confounders \((F,U)\). <br>
+									<b> Theorem 2.</b> \(\Delta \hat{Q} \rightarrow \max_{(F^{1},U^{1},F^{2},U^{2}) \in \mathbb{L}} \Delta Q \) as \( n \rightarrow \infty \). <br>
+									<b>Proof:</b> Again towards a contradiction, assume that there exists some \( (F^{1},U^{1},F^{2},U^{2}) \) such that $$ L(F^{1},U^{1},F^{2},U^{2},V^{*}) \le L(\hat{F}^{1},\hat{U}^{1},\hat{F}^{2},\hat{U}^{2},V^{*}) \& |Q^{1}-Q^{2}| > |\hat{Q}^{1}-\hat{Q}^{2}| $$ By Theorem 1, we have that \(P(V^{*}|F^{1},U^{1}),P(V^{*}|F^{2},U^{2}),P(V^{*}|\hat{F}^{1},\hat{U}^{1}),P(V^{*}|\hat{F}^{2},\hat{U}^{2})\) all converge to \(P(V^{*}|F^{*},U^{*})\) as \(n \rightarrow \infty \). But plugging in the expression for \(L\), we have that $$2 \log P(V^{*}|F^{*},U^{*})+|Q^{1}-Q^{2}| \le 2\log P(V^{*}|F^{*},U^{*})+|\hat{Q}^{1}-\hat{Q}^{2}| \implies |Q^{1}-Q^{2}| \le |\hat{Q}^{1}-\hat{Q}^{2}| $$ This is a contradiction! <br>
+									Finally comes the result we are looking for! <br>
+
+									<b> Theorem 3.</b> A causal estimand \( Q \) is identifiable given a prior \(P(F,U,\epsilon)\) and a sample \(F^{*},U^{*},\epsilon^{*} \) from that prior iff \( \Delta \hat{Q} \rightarrow 0 \) as \( n \rightarrow \infty \). <br>
+									<b>Proof:</b> By Theorem 1, we have that \( (\hat{F}^{1},\hat{U}^{1}) \) and \( (\hat{F}^{2},\hat{U}^{2}) \) are in the set of functions that maximize the log-likelihood of the data asymptotically. We need the following result:  <br>
+									<i>Lemma:</i>  A causal estimand \( Q \) is identifiable given a sample \( F^{*},U^{*},\epsilon^{*} \sim P(F,U,\epsilon) \) iff there does not exist an \((F^{+},U^{+})\) such that \(P(V^{*}|F^{+},U^{+})\) converges to \(P(V^{*}|F^{*},U^{*})\) as \( n \rightarrow \infty \), \(Q(V^{+}_{V'=v'},V^{+}_{V'=v''})\neq Q(V^{*}_{V'=v'},V^{*}_{V'=v''})\) and \(P(F^{+},U^{+})>0\). Here \(V^{+}_{V'=v'}\) and \(V^{+}_{V'=v''}\) are counterfactual outcomes generated by applying \(F^{+}\) to \(U^{*}\) and \(\epsilon^{*}\). <br>
+									The if-part of the lemma follows from the <a href="https://en.wikipedia.org/wiki/Bernstein%E2%80%93von_Mises_theorem">Bernstein-von Mises Theorem</a> which states that under certain regularity conditions the posterior distribution of any random variable is asymptotically consistent.<br>
+									The only-if part can be shown by looking into all \((F^{+},U^{+}) \in \text{support}(P(F,U))\) and the set \( \mathbb{A}=\{(F,U) : Q(V_{V'=v_{1}'}, V_{V'=v_{2}'}), P(F^{+},U^{+})>0 \}\): $$P(Q(V^{+}_{V'=v'},V^{+}_{V'=v''})|V^{*}) = \int_{(F,U) \in \mathbb{A}} P(F,U|V^{*}) dF dU$$ We can use Bayes' Theorem to write the RHS expression as $$\frac{P(V^{*}|F^{*},U^{*})}{P(V^{*})} \int_{(F,U) \in \mathbb{A}} \frac{P(V^{*}|F,U)}{P(V^{*}|F^{*},U^{*})} P(F,U) dF dU \ge \frac{P(V^{*}|F^{*},U^{*})}{P(V^{*})} \int_{(F,U) \in \mathbb{A} \cap \mathbb{L}^{*}} P(F,U) dF dU $$ where \(\mathbb{L}^{*} = \{ (F,U): \frac{P(V^{*}|F,U)}{P(V^{*}|F^{*},U^{*})} \rightarrow 1 \ \text{as} \ n \rightarrow \infty \} \). Thus, we have that $$\frac{P(Q(V^{+}_{V'=v'},V^{+}_{V'=v''})|V^{*})}{P(Q(V^{*}_{V'=v'},V^{*}_{V'=v''})|V^{*})} > 0 \ \text{if} \ \mathbb{A} \cap \mathbb{L}^{*} \neq \phi$$. <br> 
+
+									Coming back to proving the original theorem, if \(|\hat{Q}^{1}-\hat{Q}^{2}| >0 \), then at least one of \((\hat{F}^{1},\hat{U}^{1})\) or \((\hat{F}^{2},\hat{U}^{2})\) are a \((F^{+},U^{+})\) satisfying the lemma above. <br>
+									Now, by Theorem 2, we have that \( |\hat{Q}^{1}-\hat{Q}^{2}| \) maximizes the distance between induced causal effects. Therefore, if \(|\hat{Q}^{1}-\hat{Q}^{2}| \rightarrow 0 \) as \(n \rightarrow \infty \), no such \((F^{+},U^{+})\) exists. <br>
+
+									Theorem 3 provides a sufficient condition for determining identifiability aymptotically, which holds in the i.i.d case. However, in practice, this is unrealistic and \( \Delta \hat{Q} \) maybe larger than \(0\) even if the causal estimand is not identifiable. Thus, we should impose additional <b>assumptions</b>. <br>
+									<b>Assumption:</b> Let \(E_{V^{*},n} \Delta \hat{Q} \) denote the expected difference between causal estimates for \( n \) instances and the asymptotic difference be \(E_{V^{*},\infty} \Delta \hat{Q} \), then $$E_{V^{*},n} \Delta \hat{Q} \ge E_{V^{*},\infty} \Delta \hat{Q} \ \forall n \in \mathbb{N}$$
+									We can approximate \(E_{V^{*},n} \Delta \hat{Q} \) by repeatedly simulating \(V^{*} \sim P(V|F^{*},U^{*}) \) and then optimizing \(L\) to find \( \Delta \hat{Q} \) for each sample. If we have a large number of simulations, it is reasonable enough to assume CLT for the sample mean. We are now all set to describe our algorithm! 
+								</p>
+								<header class="header-dark">
+									SBI Algorithm
+								</header>
+								<b>Input:</b>
+								<ol>
+									<li>Prior: \(P(F,U,\epsilon)\)</li>
+									<li>Causal Estimand and interventions: \(Q, V',v',v''\)</li>
+									<li> Hyperparamters: \(n,k,\lambda\), threshold \(t\) and  acceptance probability \(p\)</li>
+								</ol>
+								<b>Procedure:</b>
+								<ol>
+									<li>\(F^{*},U^{*} \sim P(F,U) \) (Prior sample)</li>
+									<li><b>for</b> \(i=1(1)k\) <b>do</b></li>
+									<ul>
+										<li>\(V_i ^{*} \sim P(V|F^{*},U^{*}) \)</li>
+										<li>\(\hat{F}^{1},\hat{U}^{1},\hat{F}^{2},\hat{U}^{2} \leftarrow \arg \max L(F^{1},U^{1},F^{2},U^{2},V_{i}^{*})\) (can be done using gradient descent)</li>
+										<li>\(\hat{Q}_{i}^{1} \leftarrow Q(\hat{V}_{V=v'}^{1},\hat{V}_{V=v''}^{1}) \) (SCM 1 effect)</li>
+										<li>\(\hat{Q}_{i}^{2} \leftarrow Q(\hat{V}_{V=v'}^{2},\hat{V}_{V=v''}^{2}) \) (SCM 2 effect)</li>
+									</ul>
+									<li>\(\hat{\mu} \leftarrow \frac{1}{k} \sum_{i=1}^{k}|\hat{Q}_{i}^{1}-\hat{Q}_{i}^{2}| \)</li>
+									<li>\(\hat{\sigma}^2 \leftarrow \frac{1}{k-1} \sum_{i=1}^{k} (\hat{\mu}-|\hat{Q}_{i}^{1}-\hat{Q}_{i}^{2}|)^2\)</li>
+									<li><b>if</b> \( \Phi \left(\frac{(\hat{\mu}-t)\sqrt{k}}{\hat{\sigma}^2}  \right) \le p\), then Identifiable  </li>
+									<li><b>else</b> Not Identifiable</li>
+								</ol>
+								<p>To summarize,  we first sample a set of functions, \(F^{*}\) and latent confounders, \(U^{*}\), from the prior. Then, we repeatedly sample a set of observations,
+									\(V^{*}\). For each set of observations optimize \(L\) jointly for two SCMs. Finally, return <b>True</b> if the expected distance
+									between causal estimates is greater than \(t\) with probability less than \(p\) and return <b>False</b> otherwise.</p>
+								<p>In conclusion, we looked at Simulation-Based Identifiability, an automated approach for causal identification. In this project, we proved that SBI is sound and complete in the limit
+									of infinite samples and provided practical finite-sample bounds. The most important fact being that SBI correctly determines identifiability empirically with
+									in causal designs, which are out of scope for the do-calculus.</p>
+								
+								<header class="header-dark">
 									Motivation for using BART in estimating Causal Effects
 								</header>
 								<p> In the second half of this project, I follow the lines of <a href="https://www.tandfonline.com/doi/abs/10.1198/jcgs.2010.08162"> Hill (2010)</a>'s approach towards Bayesian Non-parametric modeling using BART. It has gained recognition since the BART algorithm is easy to implement and requires no information about how the outcome, treatment assignment and confounding covariates are parametrically related. It can detect iteractions and non-linearities in the response surface which allows it to identifying heterogeneous treatment effects. </p>
-								<p> <b> Setup: </b> We aim to estimate a model for the outcome \( Y \) , specified as \(Y=f(z,x)+\epsilon \), where \(z \) denotes the assigned treatment and \( x \)  denotes the observed confounding covariates and \( \epsilon \sim N(0,\sigma^2) \). If ignorability holds conditional on \( x \), that is \( Y(0),Y(1) \) is independent of  \( Z|X=x \), then let \(E[Y(0)|X=x]=E[Y|Z=0,X=x]=f(0,x) \) and \( E[Y(1)|X=x]=E[Y|Z=1,X=x]=f(1,x) \). BART has some potentially important advantages over alternative methods such as random forests, boosting, and neural nets (<a href="https://hastie.su.domains/Papers/ESLII.pdf"> ESLR (2003) </a>). Harping on the advantages of using BART  for Causal Inference:
+								<p> <b> Setup: </b> We aim to estimate a model for the outcome \( Y \) , specified as \(Y=f(z,x)+\epsilon \), where \(z \) denotes the assigned treatment and \( x \)  denotes the observed confounding covariates and \( \epsilon \sim N(0,\sigma^2) \). If ignorability holds conditional on \( x \), that is \( Y(0),Y(1) \) is independent of  \( Z|X=x \), then let \(E[Y(0)]|X=x]=E[Y|Z=0,X=x]=f(0,x) \) and \( E[Y(1)|X=x]=E[Y|Z=1,X=x]=f(1,x) \). BART has some potentially important advantages over alternative methods such as random forests, boosting, and neural nets (<a href="https://hastie.su.domains/Papers/ESLII.pdf"> ESLR (2003) </a>). Harping on the advantages of using BART  for Causal Inference:
 									<ul>
 										<li> BART’s performance using the default prior is highly competitive in terms of prediction with other methods that rely on cross-validation to tune algorithm parameters (<a href="https://www.jstor.org/stable/27801587#metadata_info_tab_contents"> Chipman (2007) </a>). </li>
 										<li> BART can handle very large numbers of predictors. </li>
