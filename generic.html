@@ -112,6 +112,7 @@
 
 									Theorem 3 provides a sufficient condition for determining identifiability aymptotically, which holds in the i.i.d case. However, in practice, this is unrealistic and \( \Delta \hat{Q} \) maybe larger than \(0\) even if the causal estimand is not identifiable. Thus, we should impose additional <b>assumptions</b>. <br>
 									<b>Assumption:</b> Let \(E_{V^{*},n} \Delta \hat{Q} \) denote the expected difference between causal estimates for \( n \) instances and the asymptotic difference be \(E_{V^{*},\infty} \Delta \hat{Q} \), then $$E_{V^{*},n} \Delta \hat{Q} \ge E_{V^{*},\infty} \Delta \hat{Q} \ \forall n \in \mathbb{N}$$
+									The usefulness of this assumption is that we can get probabilistic bounds on \( P(E_{V^{*},\infty} \Delta \hat{Q} \ge t) \) for some user-defined threshold \(t\), since $$P(E_{V^{*},\infty} \Delta \hat{Q} \ge t) \le P(E_{V^{*},n} \Delta \hat{Q} \ge t) \ \forall n \in \mathbb{N}$$
 									We can approximate \(E_{V^{*},n} \Delta \hat{Q} \) by repeatedly simulating \(V^{*} \sim P(V|F^{*},U^{*}) \) and then optimizing \(L\) to find \( \Delta \hat{Q} \) for each sample. If we have a large number of simulations, it is reasonable enough to assume CLT for the sample mean. We are now all set to describe our algorithm! 
 								</p>
 								<header class="header-dark">
