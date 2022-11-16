@@ -149,14 +149,306 @@
 								<header class="header-dark">
 									Motivation for using BART in estimating Causal Effects
 								</header>
-								<p> In the second half of this project, I follow the lines of <a href="https://www.tandfonline.com/doi/abs/10.1198/jcgs.2010.08162"> Hill (2010)</a>'s approach towards Bayesian Non-parametric modeling using BART. It has gained recognition since the BART algorithm is easy to implement and requires no information about how the outcome, treatment assignment and confounding covariates are parametrically related. It can detect iteractions and non-linearities in the response surface which allows it to identifying heterogeneous treatment effects. </p>
-								<p> <b> Setup: </b> We aim to estimate a model for the outcome \( Y \) , specified as \(Y=f(z,x)+\epsilon \), where \(z \) denotes the assigned treatment and \( x \)  denotes the observed confounding covariates and \( \epsilon \sim N(0,\sigma^2) \). If ignorability holds conditional on \( x \), that is \( Y(0),Y(1) \) is independent of  \( Z|X=x \), then let \(E[Y(0)]|X=x]=E[Y|Z=0,X=x]=f(0,x) \) and \( E[Y(1)|X=x]=E[Y|Z=1,X=x]=f(1,x) \). BART has some potentially important advantages over alternative methods such as random forests, boosting, and neural nets (<a href="https://hastie.su.domains/Papers/ESLII.pdf"> ESLR (2003) </a>). Harping on the advantages of using BART  for Causal Inference:
+								<p> In the second half of this project, I follow the lines of <a href="https://www.tandfonline.com/doi/abs/10.1198/jcgs.2010.08162"> Hill (2010)</a>'s approach towards Bayesian Non-parametric modeling using BART. It has gained recognition since the BART algorithm is easy to implement and requires no information about how the outcome, treatment assignment and confounding covariates are parametrically related.</p>
+								<p> <b> Setup: </b> We aim to estimate a model for the outcome \( Y \) , specified as \(y_i=f(x_i)+\epsilon_i \), where  \( x \)  denotes the observed confounding covariates and \( \epsilon \sim N(0,\sigma^2) \) and \( f \) is an unknown function. The BART prior represents \(f(x)\) as a sum of many piecewise constant binary regresion trees $$ f(x)=\sum_{l=1}^{L} g_l (x,T_l,\mu_l) $$ where \(T_l\) denotes a regression tree and \(\mu_l\) denotes a vector of means associated to the leaf nodes of \(T_l\).<br>
+									 BART has some potentially important advantages over alternative methods such as random forests, boosting, and neural nets (<a href="https://hastie.su.domains/Papers/ESLII.pdf"> ESLR (2003) </a>). Harping on the advantages of using BART  for Causal Inference:
 									<ul>
 										<li> BART’s performance using the default prior is highly competitive in terms of prediction with other methods that rely on cross-validation to tune algorithm parameters (<a href="https://www.jstor.org/stable/27801587#metadata_info_tab_contents"> Chipman (2007) </a>). </li>
 										<li> BART can handle very large numbers of predictors. </li>
 										<li> In case of missing outcome data, we can have a straightforward solution under the assumption of a missing-at-random missing data mechanism by simply fitting the BART model to the complete case sample but make predictions for the full sample. </li>
 									</ul>
 								</p>
+								<header class="header-dark">
+									BART in detail
+								</header>
+								<p> Each tree \( T_l \) consists of a set of internal decision nodes which define a partition of the covariate space \( (A_1,...,A_{B(l)})\), as well as a set of terminal nodes or leaves corresponding to each element of the partition. Each element of the partition \(A_b\) is associated a parameter value \( \mu_{lb} \). The tree prior \( p(T_l)\) is specified by: <ul>
+									<li>
+										The probability of a node having children at depth \(d \) $$ \alpha (1+d)^{-\beta}, \ \alpha \in (0,1), \ \beta \in [0,\infty)$$
+									</li>
+									<li>
+										The Uniform distribution over available predictors for splitting rule assignment at each interior node
+									</li>
+									<li>
+										the Uniform distribution on the discrete set of available splitting values for the assigned predictor at each interior node.
+									</li>
+								</ul>
+									Finally, the leaf mean parameters \( \mu_{lb} \) are assigned independent Normal priors \( \mu_{lb} \sim N(0,\tau) \), where \( \tau \) is a regularization parameter. </p>
+									
+								<p>The basic BART MCMC proceeds as a Metropolis-
+									within-Gibbs algorithm, with the key update of the
+									individual regression trees being conducted as a lo-
+									cal random walk Metropolis-Hastings (MH) update,
+									given all of the other trees as well as the residual
+									variance parameter, \( \sigma^2 \). Let \( \mathcal{T} \) denote the set of trees and \( \mathcal{M} \) denote the set of lead parameter vectors. Let \( |\mathcal{T}|=|\mathcal{M}|=L \) and each \( \mu_l \in \mathcal{M} \) is length \( B(l) \). The estimation steps proceed by the following Gibbs updates:
+									<ol>
+										<li> \(T_l, \mu_l | r_l, \sigma^2 \), for \(l=1,2,...,L\) is sampled accordingly by sampling the following conditionals:
+											<ul>
+												<li>
+													\(T_l | r_l,\sigma^2 \)
+												</li>
+												<li>
+													\(\mu_l | T_l, r_l, \sigma^2 \)
+												</li>
+											</ul>
+										</li>
+										<li> \( \sigma^2 | r \) for residuals defined as $$ r_l ^{(k+1)} = y-\sum_{l' < l}g(X,T_{l'},\mu_{l'})^{(k+1)}-g(X,T_{l'},\mu_{l'})^{(k)} $$ and $$r^{(k)}=y-\sum_{l=1}^{L} g(X,T_l,\mu_l)^{(k)}$$
+
+										</li>
+									</ol>
+									where \(k\) implies the \(k^{th}\) Monte Carlo iteration.
+								</p>
+								<header class="header-dark">
+									XBART for estimation of Causal effects
+								</header>
+								<p>
+									It turns out that BART is remarkably effective smaller problems with dozens of predictors and thousands of observations. However, it does not work well for larger problems with hundreds of thousands of observations. Thus, we present a new stochastic
+									hill climbing algorithm called <b>Accelerated Bayesian Additive Regression Trees </b>(XBART), which follows the Gibbs update framework but replaces
+									the Metropolis-Hastings updates of each single tree by a new <i>grow-from-root</i> backfitting strategy. This makes the computations faster!
+									<h3>Grow-From-Root Backfitting</h3>
+									Rather than making small moves to a given tree \(T_{l}^{(k)}\) at iteration \( k+1 \), we ignore the current tree and grow an entirely new tree \(T_{l}^{(k+1)}\) from scratch. We grow each tree recursively and stochastically and
+									the tree growing process is also terminated stochastically, based on the residuals defined above. We present the pseudo-code for the Grow-From-Root (gfr, in short) algorithm as follows:
+									<h4>Algorithm (gfr)</h4>
+									<ul>
+										<li> <b>procedure</b> gfr \((y,X,C,m,w,\sigma^2)\) to fit a tree using data \(y\) and \(X\) by recursion</li>
+										<li>
+											<b>output</b> A tree \(T_l\) and a vector of split counts \( w_l \).
+											<ul>
+												<li>\(N\): number of rows of \(y,x\)</li>
+												<li>Sample \(m\) variables using weight \(w\) where \(w \sim \text{Dir}(\bar{w}=1) \) (vector of all ones)</li>
+												<li>Select \(C\) cutpoints where \(C=\max(\sqrt{n},100)\)</li>
+												<li> Evaluate \(C \times m+1\) candidate cutpoints and no-split option</li>
+												<li><b>if</b> sample no-split option <b>then</b> Sample leaf parameter from normal distribution \(\mu \sim N \left(\frac{\sum y}{\sigma^2(\frac{1}{\tau}+\frac{N}{\sigma^2})},\frac{1}{\frac{1}{\tau}+\frac{N}{\sigma^2}} \right)\) <b> return </b></li>
+												<b>else</b>
+												<ul>
+													<li>
+														\(w_l[j]=w_l[j]+1 \), add count of selected split variable.
+													</li>
+													<li>
+														Split data to left and right node.
+													</li>
+													<li>
+														gfr\((y_{left},X_{left},C,m,w,\sigma^2)\)
+													</li>
+													<li>
+														gfr\((y_{right},X_{right},C,m,w,\sigma^2)\)
+													</li>
+												</ul>
+
+											</ul>
+										</li>
+									</ul>
+									The no-split probability has been evaluated using Bayes Rule in Equation (4) of  <a href="https://proceedings.mlr.press/v89/he19a.html">He et.al (2019)</a>.
+								</p>
+								<p>
+									Now, we are ready to describe the <b>XBART</b> algorithm pseudo-code!. 
+									<h4>XBART Algorithm</h4>
+									<ul>
+									<li>
+										<b>procedure</b> XBART \((y,X,C,m,L,I,K,\alpha,\eta)\) where \( \alpha, \eta \) are prior parameters of \(\sigma^2\).</li>
+										<li><b>output</b> Samples of forest
+										<ul>
+											<li>\(V\): number of columns of \(X\)</li>
+											<li>\(N\): number of rows of \(X\)</li>
+											<li> Initialize \(r_l^{(0)} \leftarrow \frac{y}{L}\)</li>
+											<li><b>for</b> \(k\) in \(1\) to \(K\) <b>do</b>
+												<ul>
+													<li><b>for</b> \(l\) in \(1\) to \(L\) <b>do</b></li>
+													<li>Calculate residual \(r_l^{(k)}\)</li>
+													<li><b>if</b> \(k < I\) <b>then</b> gfr\((r_l^{(k)},X,C,V,w,\sigma^2)\) </li>
+													<li><b>else</b> gfr \((r_l^{(k)},X,C,m,w,\sigma^2)\)</li>
+													<li> \(\bar{w} \leftarrow \bar{w}-\bar{w}_l ^{(k-1)} + \bar{w}_l ^{(k)}\)
+													</li>
+													<li>\( w \sim \text{Dir}(\bar{w}) \)</li>
+													<li> \( \sigma^2 \sim \text{Inv-Gamma} (N+\alpha,(r_l^{(k)})'(r_l^{(k)})+\eta) \)</li>
+												</ul>
+											<li><b>return</b></li>
+											</li>
+										</ul>
+									</li>
+									</ul>
+									We now turn to define an <b>Accelerated Bayesian Causal Forest</b> whose parameters include those that are set for the Accelerated Bayesian Tree Ensemble and those specific to the specification to estimate the heterogeneous treatment effect. An important insight is that the specifcation of the causal model is a sum of two parts:
+									$$E[Y=y_i|X=x_i,Z=z_i]=\mu(x_i)+\tau(x_i)z_i$$ where \( \mu(x_i) \) is a BART model to estimate the expected outcome from a set of covariates (also named <i>prognostic</i> function).<br>
+									The second part \(\tau(x_i)\) is a BART model that etimates the treatment effect conditional on some covariates. Since the two parts are separate models, there is flexibility in their specification. First, the same or a different set of covariates can be passed to the two models. If it is plausible that the outcome and treatment effect depend on different covariates, only those covariates can be passed to each BART. Second, the parameters passed to each model can be different. The BART for the treatment effect may be a bit smaller/more restricted, because it may be plausible that the outcome depends on the covariates in a more complex way than the treatment effect, especially when we are used to assume a constant treatment effect for all individuals.
+								</p>
+								<header class="header-dark">
+									Simulation Study
+								</header>
+								<p>
+									<h3>The Setup</h3>
+									Since fitting an Accelerated Bayesian Causal Forest (conglomeration of XBARTs) is more powerful then fitting a single XBART model, we evaluate the Causal Forest model for the following setting. The setup follows the lines of <a href="https://projecteuclid.org/journals/bayesian-analysis/volume-15/issue-3/Bayesian-Regression-Tree-Models-for-Causal-Inference--Regularization-Confounding/10.1214/19-BA1195.full">Hahn et.al.(2020)</a>:<br>
+									We consider four distinct, but closely related, data generating processes, corresponding to the various combinations of toggling three two-level settings: homogeneous versus heterogeneous treatment effects, a linear versus nonlinear conditional expectation function with sample size \(n=500 \). Five variables comprise \( x \); the first, fourth and fifth are continuous, the second is a dichotomous variable and the third is unordered categorical taking three levels (1,2 or 3). <br>
+									They are defined in the following \( \texttt{R} \) code chunk:
+									<pre><code>
+		n = 500
+	    	x1 = rnorm(n)
+		x2 = sample(1:2,n,replace=TRUE)
+		x3 = sample(1:3,n,replace=TRUE,prob = c(0.3,0.4,0.3))
+		x4 = rnorm(n)
+		x5 = rnorm(n)
+		x = cbind(x1,x4,x5,x2,as.factor(x3)) 
+						</code></pre>
+						  The treatment effect is either \( \tau(x)=3 \) (for homogeneous case) or \( \tau(x)=1+2x_2 x_4 \) (heterogeneous).<br>
+						  <pre><code>
+
+		homogeneous = FALSE # choose if homogeneous
+		if(homogeneous) {tau = rep(3,n)
+		} else {tau =  1 + 2*x[,2]*x[,4]}
+						  </code></pre>
+						  The prognostic function \(\mu(x)\) is either \(1+g(x_5)+x_1 x_3\) (linear) or \(-6+g(x_5)+6|x_3-1| \) (non-linear) where \(g(1)=2 \), \(g(2)=-1\) and \(g(3)=-4 \).
+						  <pre><code>
+		linear = TRUE # choose if linear
+		mu = function(x){
+			lev = c(2,-1,-4)
+			if (linear) {result = 1 + lev[x[,5]] + x[,1]*x[,3]
+			} else {result = -6 + lev[x[,5]] + 6*abs(x[,3] - 1)}
+			return(result)
+		}
+
+						  </code></pre>
+						  The propensity function \( \pi \) is given as $$\pi(x_i) = 0.8 \Phi \left(3 \frac{\mu(x_i)}{s}-0.5 x_1\right)+0.05+\frac{u_i}{10}$$ 
+						  where \(s\) is the standard deviation of \( \mu \) taken over the observed sample and \( u_i \sim U(0,1) \). Also, the treatment assignment scheme and the responses are generated below:
+						  <pre><code>
+		## define the propensity score function
+		pi = 0.8*pnorm(3*mu(x)/sd(mu(x))-0.5*x[,1],0,1) + 0.05 + 0.1*runif(n)
+		
+		## generate treatment assignment scheme
+		z = rbinom(n,1,pi)
+		
+		## generate response variable
+		mu = mu(x)
+		Ey = mu + tau*z
+		sig = 0.5*sd(Ey)
+		y = Ey + sig*rnorm(n)
+		
+						  </code></pre>
+						  To evaluate this method, we consider estimating both ATE and CATE according to root mean squared error. The results are based on \(200 \) independent replications for each data generating process.
+						  <pre><code>
+		library(XBCF)
+		## specify the number of categorical variables in x
+		p_cat = 2
+
+		## run xbcf
+		fit_xbcf = XBCF(y, z, x, x, pi, pcat_con = p_cat, pcat_mod = p_cat)
+
+		## obtain the treatment effect estimates from the fit
+		tauhats = getTaus(fit_xbcf)
+		muhats = getMus(fit_xbcf)
+		
+		## compute rmse
+		
+		rmse = function(a,b) {
+  		return(sqrt(mean((a - b)^2)))
+		}
+		rmse(tau,tauhats)
+
+
+						  </code></pre>
+		The plot of the estimated \( \tau \)'s  against the original \(\tau \)'s is displayed for the heterogeneous effects case- <img src="tauvstauhat.jpeg" 
+		width="600" 
+		height="500" />
+						</p>
+		<p>The RMSE comes out to be \(1.208 \). <br>
+		In order to validate our model, we predict with the same inputs this time by plugging in the estimated values. <img src="pred_tau.jpeg" 
+		width="800" 
+		height="500" />
+		</p>
+		<p>
+		Since the predicted \( \tau \)'s and \( \mu \)'s lie on the straight line \(y=x\), our model fitting is indeed correct!
+		</p>
+		Tabulating our results for the Accelerated Bayesian Causal Forest model we have:
+
+
+									<h3>XBCF results for ATE, CATE</h3>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Method</th>
+													<th>n</th>
+													<th>RMSE (Homogeneous Effects)</th>
+													<th>RMSE (Heterogeneous effects)</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>XBCF (ATE)</td>
+													<td>500</td>
+													<td>0.142</td>
+													<td>1.208</td>
+												</tr>
+												<tr>
+													<td>XBCF (CATE)</td>
+													<td>500</td>
+													<td>0.16</td>
+													<td>1.18</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<header class="header-dark">
+										Results and Performance
+									</header>
+									<p>The grow-from-root strategy proposed here opens
+										the door for computational innovations to be married to the novel BART stochastic fitting algorithm. Further, the proposed adaptive cut-points
+										and variable selection proposal together define a
+										novel predictor-dependent prior, marking a distinct
+										Bayesian model.
+										We indeed have <b>consistency</b> results for Accelerated Bayesian Causal Forests. In fact, for a collection of fully grown XBART trees, suppose \(d_n\) is a sequence of max depth of trees. Under certain regularity conditions:<br>
+										Let \(n \rightarrow \infty, d_n \rightarrow \infty \) and \(\frac{(2^{d_n}-1)(\log n)^9}{n} \rightarrow 0 \) <br> Then a Bayesian Causal Forest is consistent.
+									</p>
+									<p> We also compare XBCF with two more models namely: a regularized linear model using the <a href="https://www.jstor.org/stable/25734098#metadata_info_tab_contents">horse-shoe prior (HR)</a>  and also vanilla BART under the same simulation settings mentioned before.
+
+										<h3>Comparison results</h3>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Method</th>
+													<th>RMSE (Homogeneous Effects)</th>
+													<th>RMSE (Heterogeneous effects)</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>XBCF (ATE)</td>
+													<td>0.142</td>
+													<td>1.208</td>
+												</tr>
+												<tr>
+													<td>XBCF (CATE)</td>
+													<td>0.16</td>
+													<td>1.18</td>
+												</tr>
+												<tr>
+													<td>HR (ATE)</td>
+													<td>0.26</td>
+													<td>1.25</td>
+												</tr>
+												<tr>
+													<td>HR (CATE)</td>
+													<td>0.18</td>
+													<td>1.30</td>
+												</tr>
+												<tr>
+													<td>BART (ATE)</td>
+													<td>0.27</td>
+													<td>1.40</td>
+												</tr>
+												<tr>
+													<td>BART (CATE)</td>
+													<td>0.35</td>
+													<td>1.58</td>
+												</tr>
+
+											</tbody>
+										</table>
+									</div>
+
+									</p>
+							<p>
+								In conclusion, the results indicate that in both scenarios, specially for heterogeneous effects, XBCF is better than some of the contemporary methods in the Causal Estimation literature!
+							</p>
+
 							</section>
 
 					</div>
