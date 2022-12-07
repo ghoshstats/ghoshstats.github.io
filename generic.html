@@ -448,7 +448,100 @@
 							<p>
 								In conclusion, the results indicate that in both scenarios, specially for heterogeneous effects, XBCF is better than some of the contemporary methods in the Causal Estimation literature!
 							</p>
-
+							<header class="header-dark">
+								Bayesian Sensitivity Analysis
+							</header>
+							<p>
+								Backtracking to the original assumption of visualizing a causal inference problem as a missing data problem, we note that the quality of inference
+								in this setting rests on strong but unfortunately untestable assumptions on the "missing-ness" mechanism. In order to ensure reliable inference, <b> Sensitivity Analysis</b> is a necessary
+								step to assess robustness against violations of untestable assumptions. For units of observation \( i=1,2,...,n \), let \(Y_i \) and \(X_i \) denote the continuous outcome and covariates respectively. 
+								Furthermore, let \(R_i\) denote the missing status with \( R_i =1 \) if \(Y_i\) are observed and \(R_i=0\) otherwise. The common objective in causal inference is to estimate \( \mu=E(Y) \).
+							</p>
+							<p>
+								We consider the scenario of <i>missing at random</i>(MAR) that is, \(Y_i \) is statistically independent of \(R_i\) conditionally w.r.t \(X_i\). Then, we can estimate \( \mu \) using the IPW estimator \( \hat{\mu} = \frac{\sum_{i=1}^{n} R_i Y_i}{n \pi(X_i)} \) where \( \pi(x)=P(R=1|X=x)\) is the true propensity score.
+								It is worthwhile to note that, any statement about the missingness mechanism is a statement
+								about unknown unknowns, untestable from the observed data; as a consequence <i>missingness not-at random</i> (MNAR) can never be fully excluded from possibility. Therefore we need
+								to conduct sensitivity analysis to estimate the robustness of IPW estimator for \( \mu \) against potential MAR violations.
+							</p> 
+							<p>
+								Let \( \delta \) denote the sensitivity parameter in the underlying model which represents the degree to which MNAR is induced. See that \(E(Y)\) can be observed from a variety of sources but may be contaminated by noise. Let us assume two distinct sources of obtaining \(E(Y)\). Let \( \delta_j=(\delta_{j1},\delta_{j2})\) denote the sensitivity parameter estimates for some group \(j=1,2,...,m\) in the population. We assume 
+								that the likelihood function \( f(\delta_j)\) is bivariate normal with mean vector \( \delta \mathbf{1} \) and covariance matrix \( \Sigma \). Under the Bayesian paradigm, we consider subjective priors for \( (\delta, \Sigma)\)- the Normal-Inverse-Wishart distribution.
+								$$ \pi(\delta|\Sigma) \sim (\mathbf{1}' \Sigma^{-1} \mathbf{1})^{-1} $$
+								$$ \pi(\Sigma) \sim W^{-1}(\Psi,\nu) $$.
+								The negative logarithm of the marginal likelihood function yields the cost function with respect to \( \delta, \Psi \) and \( \nu \), 
+								$$ L(\delta,\Psi,\nu) = m \log(\pi)-\frac{\nu}{2} \log|\Psi| + \frac{\tilde{\nu}}{2} \log |\tilde{\Psi}| + \log \frac{\Gamma_{2} (\frac{\nu}{2})}{\Gamma_{2} (\frac{\tilde{\nu}}{2})} $$
+								where \( \tilde{\nu}=\nu+m \) and \( \tilde{\Psi}=\Psi + \sum_{j=1}^{m} (\delta_j-\bar{\delta})(\delta_j - \bar{\delta})' + \frac{m}{m+1}(\bar{\delta}-\delta_{0}\mathbf{1})(\bar{\delta}-\delta_{0}\mathbf{1})'\)
+							</p>
+							<p>
+								Let \( (\Psi^{*},\nu^{*},\delta_{0} ^{*}) \) be the global minimizer of the cost function. Integrating out \(\Sigma\) from the posterior distribution \( (\delta,\Sigma) \) will lead to the marginal posterior distribution of \( \delta \),
+								$$ P(\delta) \propto \left[1 + \frac{(m+1)z(\delta-\frac{u}{z})^2}{1+(m+1)w-(m+1)u^2 z^{-1}} \right]^{-\frac{(m+\nu^{*})}{2}} $$
+								where \( u = \mathbf{1}'U^{-1}\bar{y} , z=\mathbf{1}'U^{-1}\mathbf{1}\), \(w=y'U^{-1}y\) and \( U=\Psi^{*}+\sum_{j=1}^{m}(\delta_j - \bar{\delta}))\delta_j-\bar{\delta})' + \frac{m}{m+1}(\bar{\delta}-\delta_{0} ^{*} \mathbf{1})(\bar{\delta}-\delta_{0} ^{*} \mathbf{1})' \)
+								which is a non-central Student's t-distribution with \( m + \nu^{*}-1 \) degrees of freedom.
+							</p>
+							<header class="header-dark">
+								Bayesian Inference for E-value
+							</header>
+							<p>
+								For the difference in continuous measurements, this technique rests on a scaled difference between \( \hat{\mu} \) and \( \hat{\mu}_{\delta}\), where \( \hat{\mu}_{\delta}\) denotes the estimate incorporating the sensitivity parameter \( \delta \).
+								This can be used to approximate the risk ratio which in turn yields the E-value. In
+								applications of missing data, we ideally want the E-value to be statistically indistinguishable
+								from its reference value \(1\) - which indicates that there is no difference between \( \mu \) and \( \mu_{\delta} \). The posterior distribution of the E-value can then be approximated by
+								simulation using the following scheme.
+							</p>
+							<p>
+								We first decompose \( \mu \) using the Law of Iterated Expectations, $$\mu=P(R=1)E(Y|R=1)+P(R=0)E(Y|R=0)$$
+								We relate the unobserved \(E(Y|R=0)\) with the observed \( E(Y|R=1)\) by introducing the sensitivity parameter and assuming that:
+								$$E(Y|R=0)=E(Y|R=1)+\delta$$
+								Substituting this back into the decomposition of \( \mu \) will give us 
+								$$ \mu_{\delta}=P(R=1)E(Y|R=1)+\{1-P(R=1)\}\{\delta+E(Y|R=1)\} $$
+								Denoting \( \mu_{\text{mis}}\) as the standardized effect size, it can be calculated as $$\mu_{\text{mis}} = \frac{(1-P(R=1))\delta}{\sqrt{V(Y)}}$$
+								and the corresponding risk ratio (RR) can be approximated by $$ \text{RR}=\exp (0.91 \times \mu_{\text{mis}})$$
+								Finally, the E-value is obtained as: $$ \text{E-value} = \text{RR}+\sqrt{\text{RR}(\text{RR}-1)} $$ Also, using the previous results, we can find the exact distribution of the E-value (see <a href="https://arxiv.org/abs/2108.13286#:~:text=Sensitivity%20Analysis%20is%20a%20framework,departures%20from%20untestable%20underlying%20assumptions.">Xue et.al</a> for details). 
+							</p>
+							<p>
+								In order to evaluate this methodology, we perform a simulation study. Each simulated dataset contains \(i=1,2,...,2500\) independent units of observation. The missing status for each subject \(i\) was generated as \( R_i \sim \text{Bern}(0.05)\). The outcomes \(Y_i\) and covariates \(X_i\) and estimated propensity scores are simulated via subsampling from <i>Facebook conversion data</i>. The sensitivity parameter estimates \( \delta_j \) where \( j=1,2,...,15\) are generated from a bivariate normal distribution with \(E(\delta_j)=\mathbf{0}\), \(V(\delta_{j1})=V(\delta_{j2})=0.0025\) and \(\text{cov}(\delta_{j1},\delta_{j2})=0.0004\). By simulating
+								\(T=10000\) datasets in this scheme, we estimate the coverage rate of \(95 \% \) confidence intervals. The coverage rate of the \( 95 \% \) uncertainty interval for E-value with different sample sizes of missing data are tabulated below.
+								<h3>Coverage rate for different sample sizes of missing data \((m)\)</h3>
+								<div class="table-wrapper">
+									<table>
+										<thead>
+											<tr>
+												<th>\(m\)</th>
+												<th>Coverage</th>
+												<th>Expected width</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>3</td>
+												<td>0.9448</td>
+												<td>0.1469</td>
+											</tr>
+											<tr>
+												<td>9</td>
+												<td>0.9356</td>
+												<td>0.1531</td>
+											</tr>
+											<tr>
+												<td>18</td>
+												<td>0.93</td>
+												<td>0.1553</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								These results indicate that as the sample size of observed data increases, the coverage rate for the subjective
+								Bayesian approach is marginally lower than the desired level, it is robust against different
+								observed data sample sizes, indicating that subjective Bayesian approach is applicable
+								when the observed data size is relatively small. The average widths of the credible
+								intervals from the two Bayesian approaches are stable against the sample size of observed
+								data, making them more reliable than other asymptotic alternatives when the sample size
+								of the observed data is relatively small.
+							</p>
+							<p> 
+								However, there are certain potholes in our assumptions which warrant further study. We assume that this method relies on pooling together sensitivity parameter estimates
+								that are likely to be similar due to representing similar types of outcomes. But, in order to pool together sensitivity parameters that are very likely to be dissimilar, we need strongrt asumptions which might be <b> untestable</b> owing to the limitations of our study.
+							</p>
 							</section>
 
 					</div>
